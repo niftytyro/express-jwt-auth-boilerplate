@@ -3,6 +3,10 @@ import userRouter from "./routes/user";
 
 const PORT = process.env.Port || 8000;
 
+// TODO:
+// Configure package.json
+// Run npm i or yarn
+
 let main = async () => {
 	const app = express();
 
