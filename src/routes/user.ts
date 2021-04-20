@@ -1,4 +1,5 @@
 import express from "express";
+import bcrypt from "bcrypt";
 import {
 	validateEmail,
 	validateMobileNumber,
@@ -8,6 +9,7 @@ import {
 } from "../utils";
 
 const userRouter = express.Router();
+const saltRounds = 10;
 
 userRouter.post("/create", (req, res) => {
 	let email: string = req.body.email;
@@ -33,9 +35,16 @@ userRouter.post("/create", (req, res) => {
 	} else if (!validateUsername(username)) {
 		res.statusCode = 400;
 		res.send("Provide a valid username.");
+	} else {
+		bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+			if (err) {
+				res.statusCode = 500;
+				res.send("An unknown error occurred.");
+			} else {
+				// YOUR CODE HERE
+			}
+		});
 	}
-
-	// YOUR CODE HERE
 });
 
 userRouter.post("/login", (req, res) => {
@@ -52,7 +61,20 @@ userRouter.post("/login", (req, res) => {
 		res.send("Provide a valid username.");
 	}
 
-	// YOUR CODE HERE
+	let hashedPassword: string = ""; // TODO: Fetch hashedPassword from the databse.
+	bcrypt.compare(password, hashedPassword, (err, ok) => {
+		if (err) {
+			res.statusCode = 500;
+			res.send("An unknown error occurred.");
+		} else {
+			if (ok) {
+				// YOUR CODE HERE
+			} else {
+				res.statusCode = 401;
+				res.send("Wrong username/password.");
+			}
+		}
+	});
 });
 
 export default userRouter;
