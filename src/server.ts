@@ -1,5 +1,8 @@
 import express from "express";
-import userRouter from "./routes/user";
+import "reflect-metadata";
+import { createConnection } from "typeorm";
+import userRouter from "./routes/users";
+import { typeormConfig } from "./typeorm.config";
 
 const PORT = process.env.Port || 8000;
 
@@ -9,6 +12,10 @@ const PORT = process.env.Port || 8000;
 
 let main = async () => {
 	const app = express();
+
+	console.log(__dirname);
+
+	await createConnection(typeormConfig);
 
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: false }));
