@@ -33,13 +33,7 @@ export const validatePassword = (password: string) => {
 	return false;
 };
 
-export const validateUsername = (username: string) => {
-	if (/^[a-zA-z][a-zA-z0-9\._]*[a-zA-z]$/.test(username)) {
-		return true;
-	}
-	return false;
-};
-
+// JWT Utilities
 export interface UserPayload {
 	id: number;
 }

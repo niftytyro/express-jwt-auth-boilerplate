@@ -14,17 +14,14 @@ export class Users {
 	@Column({ unique: true })
 	email!: string;
 
-	@Column({ unique: true })
-	mobileNumber!: string;
+	@Column({ unique: true, nullable: true })
+	mobileNumber?: string;
 
 	@Column({})
 	name!: string;
 
-	@Column({})
-	password!: string;
-
-	@Column({ unique: true })
-	username!: string;
+	@Column({nullable: true})
+	password?: string;
 
 	@CreateDateColumn()
 	createdAt!: Date;
