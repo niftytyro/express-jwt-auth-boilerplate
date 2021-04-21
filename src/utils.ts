@@ -39,3 +39,15 @@ export const validateUsername = (username: string) => {
 	}
 	return false;
 };
+
+export interface UserPayload {
+	id: number;
+}
+
+declare global {
+	namespace Express {
+		interface Request {
+			user?: UserPayload;
+		}
+	}
+}

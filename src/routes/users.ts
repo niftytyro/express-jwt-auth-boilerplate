@@ -10,10 +10,29 @@ import {
 } from "../utils";
 import { getConnection } from "typeorm";
 import { Users } from "../entities/users";
-import { __access_token_secret__ } from "src/constants";
+import { __jwt_secret__ } from "../constants";
+import { verifyJWT } from "../middlewares/verifyJwt";
 
 const userRouter = express.Router();
+
 const saltRounds = 10;
+
+userRouter.get("/me", verifyJWT, async (req, res) => {
+	if (req.user) {
+		let connection = getConnection();
+		const user = await connection.manager.findOne(Users, req.user.id);
+		if (user)
+			return res.status(200).json({
+				email: user?.email,
+				id: user?.id,
+				mobile_number: user?.mobileNumber,
+				name: user?.name,
+				username: user?.username,
+			});
+		return res.status(404).send("User does not exist.");
+	}
+	return;
+});
 
 userRouter.post("/create", async (req, res) => {
 	const { email, mobileNumber, name, password, username } = req.body;
@@ -64,7 +83,10 @@ userRouter.post("/create", async (req, res) => {
 	newUser.username = username;
 	try {
 		newUser = await connection.manager.save(newUser);
-		const accessToken = jwt.sign({ id: newUser.id }, __access_token_secret__);
+		const accessToken = jwt.sign({ id: newUser.id }, __jwt_secret__, {
+			expiresIn: "180d",
+		});
+
 		return res.status(200).send(accessToken);
 	} catch (e) {
 		return res.status(500).send("An unknown error occurred.");
@@ -98,7 +120,9 @@ userRouter.post("/login", async (req, res) => {
 		const ok = await bcrypt.compare(password, hashedPassword);
 
 		if (ok) {
-			const accessToken = jwt.sign({ id: user.id }, __access_token_secret__);
+			const accessToken = jwt.sign({ id: user.id }, __jwt_secret__, {
+				expiresIn: "180d",
+			});
 			return res.status(200).send(accessToken);
 		} else return res.status(401).send("Wrong username/password.");
 	} catch (err) {
