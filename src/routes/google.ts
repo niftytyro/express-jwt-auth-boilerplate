@@ -7,11 +7,11 @@ import { getGoogleProfile, googleAuthUrl } from "./google-utils";
 
 const googleRouter = express.Router();
 
-googleRouter.get("/google/login", (_, res) => {
+googleRouter.get("/login", (_, res) => {
 	res.redirect(googleAuthUrl);
 });
 
-googleRouter.get("/google/callback", async (req, res) => {
+googleRouter.get("/callback", async (req, res) => {
 	const { code } = req.body;
 
 	const userData = await getGoogleProfile(code);
@@ -31,7 +31,7 @@ googleRouter.get("/google/callback", async (req, res) => {
 		}
 	}
 	const token = jwt.sign({ id: user.id }, __jwt_secret__);
-	res.status(200).send(token);
+	return res.status(200).send(token);
 });
 
 export default googleRouter;

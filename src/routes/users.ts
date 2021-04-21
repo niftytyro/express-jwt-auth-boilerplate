@@ -11,6 +11,7 @@ import { getConnection } from "typeorm";
 import { Users } from "../entities/users";
 import { __jwt_secret__ } from "../constants";
 import { verifyJWT } from "../middlewares/verifyJwt";
+import googleRouter from "./google";
 
 const userRouter = express.Router();
 
@@ -116,5 +117,7 @@ userRouter.post("/login", async (req, res) => {
 	}
 	return res.status(400).send("This account was created with google.");
 });
+
+userRouter.use("/google", googleRouter);
 
 export default userRouter;
