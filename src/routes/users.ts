@@ -83,9 +83,7 @@ userRouter.post("/create", async (req, res) => {
 	newUser.username = username;
 	try {
 		newUser = await connection.manager.save(newUser);
-		const accessToken = jwt.sign({ id: newUser.id }, __jwt_secret__, {
-			expiresIn: "180d",
-		});
+		const accessToken = jwt.sign({ id: newUser.id }, __jwt_secret__);
 
 		return res.status(200).send(accessToken);
 	} catch (e) {
@@ -120,9 +118,7 @@ userRouter.post("/login", async (req, res) => {
 		const ok = await bcrypt.compare(password, hashedPassword);
 
 		if (ok) {
-			const accessToken = jwt.sign({ id: user.id }, __jwt_secret__, {
-				expiresIn: "180d",
-			});
+			const accessToken = jwt.sign({ id: user.id }, __jwt_secret__);
 			return res.status(200).send(accessToken);
 		} else return res.status(401).send("Wrong username/password.");
 	} catch (err) {

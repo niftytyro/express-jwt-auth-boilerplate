@@ -2,7 +2,7 @@
 
 A boilerplate for JWT authentication with express.js in TypeScript.
 
-### How to configure
+### Usage
 
 1. Clone this repo:
    `git clone https://github.com/udasitharani/express-jwt-auth-boilerplate`
@@ -12,4 +12,10 @@ A boilerplate for JWT authentication with express.js in TypeScript.
 3. Install node_modules:
    `npm i` or `yarn`
 
-4. Setup your db and fetch `hashedPassword` from database in `user/login` endpoint.
+### TODO
+
+1. Setup your own typeorm configuration in `typeorm.config.ts`.
+
+2. Setup your environtment variables by creating a `.env` file, just like the `example.env`.
+
+3. The jwt doesn't expire. Set your expiration time if you want to.
