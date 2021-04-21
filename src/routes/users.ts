@@ -1,5 +1,6 @@
 import express from "express";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import {
 	validateEmail,
 	validateMobileNumber,
@@ -9,16 +10,13 @@ import {
 } from "../utils";
 import { getConnection } from "typeorm";
 import { Users } from "../entities/users";
+import { __access_token_secret__ } from "src/constants";
 
 const userRouter = express.Router();
 const saltRounds = 10;
 
 userRouter.post("/create", async (req, res) => {
-	let email: string = req.body.email;
-	let mobileNumber: string = req.body.mobileNumber;
-	let name: string = req.body.name;
-	let password: string = req.body.password;
-	let username: string = req.body.username;
+	const { email, mobileNumber, name, password, username } = req.body;
 
 	if (!validateEmail(email))
 		return res.status(400).send("Provide a valid email.");
@@ -66,16 +64,15 @@ userRouter.post("/create", async (req, res) => {
 	newUser.username = username;
 	try {
 		newUser = await connection.manager.save(newUser);
+		const accessToken = jwt.sign({ id: newUser.id }, __access_token_secret__);
+		return res.status(200).send(accessToken);
 	} catch (e) {
 		return res.status(500).send("An unknown error occurred.");
 	}
-
-	return res.status(200).send("Your account has been created.");
 });
 
 userRouter.post("/login", async (req, res) => {
-	let password: string = req.body.password;
-	let username: string = req.body.username;
+	const { password, username } = req.body;
 
 	if (!validatePassword(password))
 		return res
@@ -99,8 +96,11 @@ userRouter.post("/login", async (req, res) => {
 
 	try {
 		const ok = await bcrypt.compare(password, hashedPassword);
-		if (ok) return res.status(200).send("You are logged in.");
-		else return res.status(401).send("Wrong username/password.");
+
+		if (ok) {
+			const accessToken = jwt.sign({ id: user.id }, __access_token_secret__);
+			return res.status(200).send(accessToken);
+		} else return res.status(401).send("Wrong username/password.");
 	} catch (err) {
 		return res.status(500).send("An unknown error occurred.");
 	}
